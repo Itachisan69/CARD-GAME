@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class CardView : MonoBehaviour
 {
-    [SerializeField] TMP_Text title;
-    [SerializeField] TMP_Text description;
-    [SerializeField] TMP_Text mana;
-    [SerializeField] SpriteRenderer imageSR;
-    [SerializeField] GameObject wrapper;
+    [SerializeField] private TMP_Text title;
+    [SerializeField] private TMP_Text description;
+    [SerializeField] private TMP_Text mana;
+    [SerializeField] private SpriteRenderer imageSR;
+    [SerializeField] private GameObject wrapper;
 }
