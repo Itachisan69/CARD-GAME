@@ -102,6 +102,12 @@ public class CardSystem : Singelton<CardSystem>
 
         ActionSystem.Instance.AddReaction(spendManaGA);
 
+        if (playCardGA.Card.ManualTargetEffect != null)
+        {
+            PerformEffectGA performEffectGA = new(playCardGA.Card.ManualTargetEffect, new() { playCardGA.ManualTarget });
+            ActionSystem.Instance.AddReaction(performEffectGA);
+        }
+
         // Perform Effects
 
         foreach (var effectWrapper in playCardGA.Card.OtherEffects)
