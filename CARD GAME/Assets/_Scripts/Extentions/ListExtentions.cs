@@ -6,10 +6,16 @@ public static class ListExtentions
 {
     public static T Draw<T>(this List<T> list)
     {
-        if (list.Count == 0) return default ;
+        // Return null immediately if the list is empty (no change here, but cleaner).
+        if (list.Count == 0) return default;
+
+        // Use RemoveAt for better performance than list.Remove(t)
         int r = Random.Range(0, list.Count);
         T t = list[r];
-        list.Remove(t);
+
+        // Use RemoveAt to remove the element by index, which is faster.
+        list.RemoveAt(r);
+
         return t;
     }
 }

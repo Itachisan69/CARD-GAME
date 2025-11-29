@@ -43,16 +43,27 @@ public class CardSystem : Singelton<CardSystem>
     //Performers
     private IEnumerator DrawCardsPerformer(DrawCardsGA drawCardsGA)
     {
-        int actualAmount = Mathf.Min(drawCardsGA.Amount, drawPile.Count);
-        int notDrawnAmount = drawCardsGA.Amount - actualAmount;
-        for (int i = 0; i < actualAmount; i++) 
+        // 1. Calculate and perform initial draws
+        int cardsToDraw = drawCardsGA.Amount;
+        int initialDrawCount = Mathf.Min(cardsToDraw, drawPile.Count);
+
+        for (int i = 0; i < initialDrawCount; i++)
         {
             yield return DrawCards();
         }
-        if (notDrawnAmount >0)
+
+        // Update the number of cards still needed
+        int remainingDraws = cardsToDraw - initialDrawCount;
+
+        // 2. Handle Refill and remaining draws
+        if (remainingDraws > 0)
         {
             RefillDeck();
-            for (int i = 0; i < notDrawnAmount; i++)
+
+            // CRITICAL FIX: Recalculate how many of the 'remainingDraws' are now available
+            int postRefillDrawCount = Mathf.Min(remainingDraws, drawPile.Count);
+
+            for (int i = 0; i < postRefillDrawCount; i++)
             {
                 yield return DrawCards();
             }
@@ -72,10 +83,27 @@ public class CardSystem : Singelton<CardSystem>
 
     private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
     {
-        hand.Remove(playCardGA.Card);
-        CardView cardView = handView.RemoveCard(playCardGA.Card);
-        yield return DiscardCard(cardView);
-        // Perform Effects
+        Card cardToDiscard = playCardGA.Card;
+
+        // 1. Remove the card from the hand
+        hand.Remove(cardToDiscard);
+
+        // 2. FIX: Add the card object to the discard pile list
+        discardPile.Add(cardToDiscard);
+
+        // 3. Handle the CardView visual removal/discard
+        CardView cardView = handView.RemoveCard(cardToDiscard);
+        yield return DiscardCard(cardView); // This handles the visual movement and destruction
+
+        // 4. Perform Game Actions (Mana, Effects, etc.)
+        SpendManaGA spendManaGA = new(cardToDiscard.Mana);
+        ActionSystem.Instance.AddReaction(spendManaGA);
+
+        foreach (var effect in cardToDiscard.Effects)
+        {
+            PerformEffectGA performEffectGA = new(effect);
+            ActionSystem.Instance.AddReaction(performEffectGA);
+        }
     }
 
     //Reactions
@@ -95,6 +123,12 @@ public class CardSystem : Singelton<CardSystem>
     private IEnumerator DrawCards()
     {
         Card card = drawPile.Draw();
+        if (card == null)
+        {
+            // This should not happen if logic is correct, but handles the 'default' return.
+            Debug.LogWarning("Attempted to draw from an empty pile after refill logic failed. Skipping card draw.");
+            yield break;
+        }
         hand.Add(card);
         CardView cardView = CardViewCreator.Instance.CreateCardView(card, drawPilePoint.position, drawPilePoint.rotation);
         yield return handView.AddCard(cardView);
