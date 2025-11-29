@@ -42,39 +42,44 @@ public class CardSystem : Singelton<CardSystem>
 
     //Performers
     private IEnumerator DrawCardsPerformer(DrawCardsGA drawCardsGA)
-    {
-        // 1. Calculate and perform initial draws
-        int cardsToDraw = drawCardsGA.Amount;
-        int initialDrawCount = Mathf.Min(cardsToDraw, drawPile.Count);
 
-        for (int i = 0; i < initialDrawCount; i++)
+    {
+
+        int actualAmount = Mathf.Min(drawCardsGA.Amount, drawPile.Count);
+
+        int notDrawnAmount = drawCardsGA.Amount - actualAmount;
+
+        for (int i = 0; i < actualAmount; i++)
+
         {
+
             yield return DrawCards();
+
         }
 
-        // Update the number of cards still needed
-        int remainingDraws = cardsToDraw - initialDrawCount;
+        if (notDrawnAmount > 0)
 
-        // 2. Handle Refill and remaining draws
-        if (remainingDraws > 0)
         {
+
             RefillDeck();
 
-            // CRITICAL FIX: Recalculate how many of the 'remainingDraws' are now available
-            int postRefillDrawCount = Mathf.Min(remainingDraws, drawPile.Count);
+            for (int i = 0; i < notDrawnAmount; i++)
 
-            for (int i = 0; i < postRefillDrawCount; i++)
             {
+
                 yield return DrawCards();
+
             }
+
         }
+
     }
 
     private IEnumerator DiscardAllCardsPerformer(DiscardAllCardsGA discardAllCardsGA)
     {
         foreach (var card in hand)
         {
-            discardPile.Add(card);
+            
             CardView cardView = handView.RemoveCard(card);
             yield return DiscardCard(cardView);
         }
@@ -82,29 +87,36 @@ public class CardSystem : Singelton<CardSystem>
     }
 
     private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
+
     {
-        Card cardToDiscard = playCardGA.Card;
 
-        // 1. Remove the card from the hand
-        hand.Remove(cardToDiscard);
+        hand.Remove(playCardGA.Card);
 
-        // 2. FIX: Add the card object to the discard pile list
-        discardPile.Add(cardToDiscard);
+        CardView cardView = handView.RemoveCard(playCardGA.Card);
 
-        // 3. Handle the CardView visual removal/discard
-        CardView cardView = handView.RemoveCard(cardToDiscard);
-        yield return DiscardCard(cardView); // This handles the visual movement and destruction
+        yield return DiscardCard(cardView);
 
-        // 4. Perform Game Actions (Mana, Effects, etc.)
-        SpendManaGA spendManaGA = new(cardToDiscard.Mana);
+
+
+        SpendManaGA spendManaGA = new(playCardGA.Card.Mana);
+
         ActionSystem.Instance.AddReaction(spendManaGA);
 
-        foreach (var effect in cardToDiscard.Effects)
+        // Perform Effects
+
+        foreach (var effectWrapper in playCardGA.Card.OtherEffects)
+
         {
-            PerformEffectGA performEffectGA = new(effect);
+            List<CombatantView> targets = effectWrapper.TargetMode.GetTargets();
+            PerformEffectGA performEffectGA = new(effectWrapper.Effect, targets);
+
             ActionSystem.Instance.AddReaction(performEffectGA);
+
         }
+
     }
+
+
 
     //Reactions
     private void EnemyTurnPreReaction(EnemyTurnGA enemyTurnGA)
@@ -121,17 +133,17 @@ public class CardSystem : Singelton<CardSystem>
 
 
     private IEnumerator DrawCards()
+
     {
+
         Card card = drawPile.Draw();
-        if (card == null)
-        {
-            // This should not happen if logic is correct, but handles the 'default' return.
-            Debug.LogWarning("Attempted to draw from an empty pile after refill logic failed. Skipping card draw.");
-            yield break;
-        }
+
         hand.Add(card);
+
         CardView cardView = CardViewCreator.Instance.CreateCardView(card, drawPilePoint.position, drawPilePoint.rotation);
+
         yield return handView.AddCard(cardView);
+
     }
     private void RefillDeck()
     {
@@ -141,6 +153,7 @@ public class CardSystem : Singelton<CardSystem>
 
     private IEnumerator DiscardCard(CardView cardView)
     {
+        discardPile.Add(cardView.Card);
         cardView.transform.DOScale(Vector3.zero, 0.15f);
         Tween tween = cardView.transform.DOMove(discardPilePoint.position, 0.15f);
         yield return tween.WaitForCompletion();

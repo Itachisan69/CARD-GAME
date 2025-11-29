@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bb3b86ef2d7aa49b241c4c957b8b88, type: 3}
   m_Name: Arrow Rain
   m_EditorClassIdentifier: 
-  <Description>k__BackingField: 
-  <Mana>k__BackingField: 0
-  <Image>k__BackingField: {fileID: 0}
-  <Effects>k__BackingField: []
+  <Description>k__BackingField: Deal 10 damage to all enemies
+  <Mana>k__BackingField: 1
+  <Image>k__BackingField: {fileID: 21300000, guid: 452b6a04344d80840a3dd5e5ee1b2293,
+    type: 3}
+  <Effects>k__BackingField:
+  - rid: 3099638292268187649
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3099638292268187649
+      type: {class: DealDamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        damageAmount: 10
