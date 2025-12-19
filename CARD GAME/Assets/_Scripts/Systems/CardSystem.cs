@@ -19,7 +19,11 @@ public class CardSystem : Singelton<CardSystem>
         ActionSystem.AttachPerformer<DrawCardsGA>(DrawCardsPerformer);
         ActionSystem.AttachPerformer<DiscardAllCardsGA>(DiscardAllCardsPerformer);
         ActionSystem.AttachPerformer<PlayCardGA>(PlayCardPerformer);
+<<<<<<< HEAD
    
+=======
+        
+>>>>>>> 776a8393a4012d4982778dc8e78dee93ef52c7d0
     }
     void OnDisable()
     {
@@ -121,6 +125,14 @@ public class CardSystem : Singelton<CardSystem>
     }
 
 
+<<<<<<< HEAD
+=======
+
+    
+    
+
+
+>>>>>>> 776a8393a4012d4982778dc8e78dee93ef52c7d0
     private IEnumerator DrawCards()
 
     {
