@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a86d903412dc30a40982b4183362a84c, type: 3}
   m_Name: Hero
   m_EditorClassIdentifier: 
-  <Image>k__BackingField: {fileID: 21300000, guid: 3f7d6ea96a77bc44885967a7ffb5ab60,
+  <Image>k__BackingField: {fileID: 21300000, guid: 7fef1959006602149969cd96e2fc6004,
     type: 3}
-  <Health>k__BackingField: 50
+  <Health>k__BackingField: 100
   <Deck>k__BackingField:
   - {fileID: 11400000, guid: 1c81084382d44654ba65b501caf56589, type: 2}
   - {fileID: 11400000, guid: 1c81084382d44654ba65b501caf56589, type: 2}

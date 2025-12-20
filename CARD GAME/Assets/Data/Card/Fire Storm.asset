@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Description>k__BackingField: Add 3 burn to all enemies
   <Mana>k__BackingField: 2
-  <Image>k__BackingField: {fileID: 21300000, guid: 9d5e8cdef545ff148a11f78dd4b09a5d,
+  <Image>k__BackingField: {fileID: 21300000, guid: 1b82eb338b0bc3942a466b60f95d625f,
     type: 3}
   <ManualTargetEffect>k__BackingField:
     rid: -2
