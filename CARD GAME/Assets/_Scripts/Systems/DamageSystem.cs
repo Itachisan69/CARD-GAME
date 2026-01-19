@@ -19,6 +19,7 @@ public class DamageSystem : MonoBehaviour
         foreach(var target in dealDamageGA.Targets)
         {
             target.Damage(dealDamageGA.Amount);
+            AudioSystem.Instance.PlayHitSFX();
             Instantiate(damageVFX, target.transform.position, Quaternion.identity);
             yield return new WaitForSeconds(0.15f);
             if (target.CurrentHealth<=0)

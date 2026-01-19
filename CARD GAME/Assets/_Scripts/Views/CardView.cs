@@ -30,6 +30,7 @@ public class CardView : MonoBehaviour
         wrapper.SetActive(false);
         Vector3 pos = new(transform.position.x, -2, 0);
         CardHoverSystem.Instance.Show(Card, pos);
+        AudioSystem.Instance.PlayHoverSFX();
     }
     private void OnMouseExit()
     {
